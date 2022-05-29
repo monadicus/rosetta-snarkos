@@ -7,6 +7,9 @@ rust-version = "1.59.0"
 [dependencies]
 mentat = { git = "https://github.com/monadicus/mentat", features = ["server"] }
 
+[patch."https://github.com/monadicus/mentat"]
+mentat = { path = "../mentat/mentat" }
+
 [profile.release]
 codegen-units = 1
 panic = "abort"

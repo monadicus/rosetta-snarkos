@@ -35,7 +35,8 @@ ENV PATH=/root/.cargo/bin:$PATH
 RUN git clone -b $BRANCH https://github.com/monadicus/rosetta-snarkos.git \
     && cd rosetta-snarkos \
     && cargo build --release \
-    && mv ./target/release/rosetta-snarkos /app/server
+    && mv ./target/release/rosetta-snarkos /app/server \
+    && mv ./docker.conf.toml /app/conf.toml
 
 ## Build Final Image
 FROM debian:buster-slim
@@ -51,13 +52,13 @@ RUN mkdir -p /app \
 
 WORKDIR /app
 
-# Copy binary from mentat-node-builder
+# Copy binary from snarkos-node-builder
 COPY --from=snarkos-node-builder /app/node-runner /app/node-runner
 
-# Copy binary from rosetta-mentat-builder
-COPY --from=rosetta-mentat-builder /app/server /app/server 
+# Copy binary from rosetta-snarkos-server
+COPY --from=rosetta-mentat-builder /app/* /app 
 
 # Set permissions for everything added to /app
 RUN chmod -R 755 /app/*
 
-CMD ["/app/server", "./docker.conf.toml"]
+CMD ["/app/server", "./conf.toml"]
