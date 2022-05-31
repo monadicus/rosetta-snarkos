@@ -23,7 +23,7 @@ run-mainnet-offline:
 	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 4132:4132 -p 3032:3032 mentat-rosetta-snarkos:latest
 
 run-testnet-online:
-	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 mentat-rosetta-snarkos:latest
+	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 4132:4132 -p 3032:3032 mentat-rosetta-snarkos:latest
 
 run-testnet-offline:
 	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 4132:4132 -p 3032:3032 mentat-rosetta-snarkos:latest

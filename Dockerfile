@@ -35,7 +35,7 @@ ENV PATH=/root/.cargo/bin:$PATH
 RUN git clone -b $BRANCH https://github.com/monadicus/rosetta-snarkos.git \
     && cd rosetta-snarkos \
     && cargo build --profile release-docker \
-    && mv ./target/release/rosetta-snarkos /app/server \
+    && mv ./target/release-docker/rosetta-snarkos /app/server \
     && mv ./docker.conf.toml /app/conf.toml
 
 ## Build Final Image
