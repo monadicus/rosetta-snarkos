@@ -1,28 +1,49 @@
-mod call_api;
-mod construction_api;
-mod data_api;
-mod indexer_api;
+mod api;
+use api::*;
 mod node;
-mod optional_api;
 mod request;
 mod responses;
 
-use mentat::server::{Server, ServerType};
+use mentat_asserter::Asserter;
+use mentat_server::{
+    conf::{AsserterTable, Configuration, NodeConf},
+    mentat,
+    server::ServerType,
+};
+pub use responses::*;
 
-#[derive(Clone)]
+#[mentat]
 struct MentatSnarkos;
 
 impl ServerType for MentatSnarkos {
-    type CallApi = call_api::SnarkosCallApi;
-    type ConstructionApi = construction_api::SnarkosConstructionApi;
-    type CustomConfig = node::NodeConfig;
-    type DataApi = data_api::SnarkosDataApi;
-    type IndexerApi = indexer_api::SnarkosIndexerApi;
-    type OptionalApi = optional_api::SnarkosOptionalApi;
-}
+    type AccountApi = SnarkosAccountApi;
+    type BlockApi = SnarkosBlockApi;
+    type CallApi = SnarkosCallApi;
+    type ConstructionApi = SnarkosConstructionApi;
+    type CustomConfig = node::Config;
+    type EventsApi = SnarkosEventsApi;
+    type MempoolsApi = SnarkosMempoolApi;
+    type NetworkApi = SnarkosNetworkApi;
+    type NodeCaller = request::SnarkosCaller;
+    type OptionalApi = SnarkosOptionalApi;
+    type SearchApi = SnarkosSearchApi;
 
-#[mentat::main]
-async fn main() -> Server<MentatSnarkos> {
-    println!("hello rosetta!");
-    Server::default()
+    fn init_asserters(config: &Configuration<Self::CustomConfig>) -> AsserterTable {
+        Asserter::new_server(
+            vec!["INPUT".into(), "OUTPUT".into(), "COINBASE".into()],
+            true,
+            vec![
+                (
+                    Self::CustomConfig::BLOCKCHAIN,
+                    config.network.to_string().as_str(),
+                )
+                    .into(),
+            ],
+            Vec::new(),
+            false,
+            None,
+        )
+        .unwrap()
+        .into()
+    }
 }

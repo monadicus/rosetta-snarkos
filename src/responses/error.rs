@@ -1,15 +1,11 @@
 // {"jsonrpc":"2.0","error":{"code":-32000,"message":"Odd number of
 // digits"},"id":"1"}
 
-use mentat::{
-    errors::{ApiError, MentatError, Result},
-    indexmap::IndexMap,
-    serde::Deserialize,
-    serde_json::Value,
-};
+use mentat_server::{indexmap::IndexMap, serde::Deserialize, serde_json::Value};
+use mentat_types::{MentatError, Result};
 
 #[derive(Clone, Debug, Deserialize)]
-#[serde(crate = "mentat::serde")]
+#[serde(crate = "mentat_server::serde")]
 pub struct ErrorResponse {
     pub jsonrpc: String,
     pub error: IndexMap<String, Value>,
@@ -18,12 +14,13 @@ pub struct ErrorResponse {
 
 impl<R> From<ErrorResponse> for Result<R> {
     fn from(response: ErrorResponse) -> Self {
-        Err(MentatError::Internal(ApiError {
+        Err(MentatError {
             code: 500,
+            status_code: 500,
             message: "Snarkos JsonRPC Error.".to_string(),
             description: None,
             retriable: true,
             details: response.error,
-        }))
+        })
     }
 }

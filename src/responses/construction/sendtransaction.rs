@@ -1,13 +1,13 @@
-use mentat::{
-    identifiers::TransactionIdentifier,
-    indexmap::IndexMap,
-    responses::TransactionIdentifierResponse,
-};
+// use mentat_server::{
+//     identifiers::TransactionIdentifier,
+//     indexmap::IndexMap,
+//     responses::TransactionIdentifierResponse,
+// };
 
 use super::*;
 
 #[derive(Debug, Deserialize, Clone)]
-#[serde(crate = "mentat::serde")]
+#[serde(crate = "mentat_server::serde")]
 
 pub struct SendTransactionResult(String);
 
