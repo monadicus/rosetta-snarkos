@@ -20,22 +20,6 @@ impl CallerDataApi for SnarkosDataApi {}
 
 #[async_trait]
 impl DataApi for SnarkosDataApi {
-    async fn block(
-        &self,
-        _caller: Caller,
-        data: BlockRequest,
-        rpc_caller: RpcCaller,
-    ) -> MentatResponse<BlockResponse> {
-        if let Some(block_id) = data.block_identifier.index {
-            let result = rpc_caller
-                .rpc_call::<Response<BlockResult>>(SnarkosJrpc::new("getblock", vec![block_id]))
-                .await?;
-            Ok(Json(result.into()))
-        } else {
-            Err("todo".into())
-        }
-    }
-
     async fn block_transaction(
         &self,
         _caller: Caller,

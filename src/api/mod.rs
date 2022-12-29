@@ -28,11 +28,9 @@ use mentat_server::{
     axum::{async_trait, Json},
     conf::{Mode, NodePid},
     sysinfo::Pid,
+    tracing,
 };
 use mentat_types::*;
 pub use search::*;
 
-use crate::{
-    request::{Jrpc, SnarkosCaller},
-    Response,
-};
+use crate::request::{Request, SnarkosCaller};

@@ -1,5 +1,4 @@
 use super::*;
-use crate::construction::*;
 
 #[derive(Clone, Default)]
 pub struct SnarkosConstructionApi;
@@ -11,20 +10,22 @@ impl ConstructionApiRouter for SnarkosConstructionApi {}
 impl ConstructionApi for SnarkosConstructionApi {
     type NodeCaller = SnarkosCaller;
 
-    async fn submit(
-        &self,
-        _caller: Caller,
-        data: ConstructionSubmitRequest,
-        node_caller: &Self::NodeCaller,
-    ) -> Result<TransactionIdentifierResponse> {
-        let result = node_caller
-            .rpc_call::<Response<SendTransactionResult>>(Jrpc::new(
-                "sendtransaction",
-                vec![data.signed_transaction],
-            ))
-            .await?
-            .unwrap_response()?;
+    // async fn submit(
+    //     &self,
+    //     _caller: Caller,
+    //     data: ConstructionSubmitRequest,
+    //     node_caller: &Self::NodeCaller,
+    // ) -> Result<TransactionIdentifierResponse> {
+    //     // let result = node_caller.rest_call(Request::Get())
+    //     // let result = node_caller
+    //     //     .rpc_call::<Response<SendTransactionResult>>(Jrpc::new(
+    //     //         "sendtransaction",
+    //     //         vec![data.signed_transaction],
+    //     //     ))
+    //     //     .await?
+    //     //     .unwrap_response()?;
 
-        Ok(result.into())
-    }
+    //     // Ok(result.into())
+    //     todo!()
+    // }
 }

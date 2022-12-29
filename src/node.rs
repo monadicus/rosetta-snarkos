@@ -9,7 +9,9 @@ use mentat_server::{
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(crate = "mentat_server::serde")]
-pub struct Config;
+pub struct Config {
+    pub private_key: String,
+}
 
 #[async_trait]
 impl NodeConf for Config {
@@ -25,8 +27,8 @@ impl NodeConf for Config {
             &format!("{}:4133", config.address),
             "--rest",
             &format!("{}:{}", config.address, config.node_rpc_port),
-            "--verbosity",
-            "2",
+            "--beacon",
+            &config.custom.private_key,
         ]);
         command
     }
@@ -37,8 +39,8 @@ impl Config {
         let url = format!(
             "{}://{}:{}",
             if conf.secure_http { "https" } else { "http" },
-            conf.node_address,
-            conf.node_rpc_port
+            "vm.aleo.org",
+            "80"
         );
 
         Url::from_str(&url).expect("Invalid node url: {url}")
