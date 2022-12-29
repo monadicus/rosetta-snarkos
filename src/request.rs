@@ -8,7 +8,7 @@ use mentat_server::{
 };
 use mentat_types::{MapErrMentat, Result};
 
-use crate::{common::SnarkosTransaction, node::Config};
+use crate::{node::Config, SnarkosTransaction};
 
 pub enum Request<'a> {
     Get(&'a str),
@@ -44,14 +44,14 @@ impl<'a> Request<'a> {
     }
 
     /// Returns the block for the given block hash.
-    pub fn get_block_by_hash(hash: String) -> Self {
+    pub fn get_block_by_hash(hash: &str) -> Self {
         let ep = format!("api/testnet3/block/{hash}");
         let leaked = Box::leak(ep.into_boxed_str());
         Self::Get(leaked)
     }
 
     /// Returns the block height for the given block hash.
-    pub fn get_block_height_by_hash(hash: String) -> Self {
+    pub fn get_block_height_by_hash(hash: &str) -> Self {
         let ep = format!("api/testnet3/height/{hash}");
         let leaked = Box::leak(ep.into_boxed_str());
         Self::Get(leaked)
@@ -72,42 +72,42 @@ impl<'a> Request<'a> {
     }
 
     /// Returns the transaction for the given transaction ID.
-    pub fn get_transaction(id: String) -> Self {
+    pub fn get_transaction(id: &str) -> Self {
         let ep = format!("api/testnet3/transaction/{id}");
         let leaked = Box::leak(ep.into_boxed_str());
         Self::Get(leaked)
     }
 
     /// Returns the program for the given program ID.
-    pub fn get_program(id: String) -> Self {
+    pub fn get_program(id: &str) -> Self {
         let ep = format!("api/testnet3/program/{id}");
         let leaked = Box::leak(ep.into_boxed_str());
         Self::Get(leaked)
     }
 
     /// Returns the state path for the given commitment.
-    pub fn get_state_path(commitment: String) -> Self {
+    pub fn get_state_path(commitment: &str) -> Self {
         let ep = format!("api/testnet3/statePath/{commitment}");
         let leaked = Box::leak(ep.into_boxed_str());
         Self::Get(leaked)
     }
 
     /// Returns the block hash that contains the given `transaction ID`.
-    pub fn find_block_hash(transaction_id: String) -> Self {
+    pub fn find_block_hash(transaction_id: &str) -> Self {
         let ep = format!("api/testnet3/find/blockHash/{transaction_id}");
         let leaked = Box::leak(ep.into_boxed_str());
         Self::Get(leaked)
     }
 
     /// Returns the transaction ID that contains the given `program ID`.
-    pub fn find_deployment_id(program: String) -> Self {
+    pub fn find_deployment_id(program: &str) -> Self {
         let ep = format!("api/testnet3/find/deploymentID/{program}");
         let leaked = Box::leak(ep.into_boxed_str());
         Self::Get(leaked)
     }
 
     /// Returns the transaction ID that contains the given `transition ID`.
-    pub fn find_transaction_id(transition_id: String) -> Self {
+    pub fn find_transaction_id(transition_id: &str) -> Self {
         let ep = format!("api/testnet3/find/transactionID/{transition_id}");
         let leaked = Box::leak(ep.into_boxed_str());
         Self::Get(leaked)
@@ -115,7 +115,7 @@ impl<'a> Request<'a> {
 
     /// Returns the transition ID that contains the given `input ID` or `output
     /// ID`.
-    pub fn find_transition_id(id: String) -> Self {
+    pub fn find_transition_id(id: &str) -> Self {
         let ep = format!("api/testnet3/find/transitionID/{id}");
         let leaked = Box::leak(ep.into_boxed_str());
         Self::Get(leaked)

@@ -11,7 +11,7 @@ pub enum SnarkosTransaction {
 }
 
 impl SnarkosTransaction {
-    fn id(&self) -> String {
+    pub fn id(&self) -> String {
         match self {
             Self::Deploy(tx) => tx.id.clone(),
             Self::Execute(tx) => tx.id.clone(),
@@ -34,8 +34,6 @@ impl SnarkosTransaction {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(crate = "mentat_server::serde")]
 pub struct DeployTx {
-    #[serde(rename = "type")]
-    type_: String,
     id: String,
     deployment: Deployment,
     // additional_fee: (),
@@ -52,8 +50,6 @@ pub struct Deployment {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(crate = "mentat_server::serde")]
 pub struct ExecTx {
-    #[serde(rename = "type")]
-    type_: String,
     id: String,
     execution: Execution,
 }
@@ -75,6 +71,22 @@ impl From<SnarkosTransaction> for Transaction {
             operations: transaction.operations(),
             related_transactions: Vec::new(),
             metadata: IndexMap::new(),
+        }
+    }
+}
+
+impl From<SnarkosTransaction> for BlockTransactionResponse {
+    fn from(transaction: SnarkosTransaction) -> Self {
+        BlockTransactionResponse {
+            transaction: transaction.into(),
+        }
+    }
+}
+
+impl From<SnarkosTransaction> for TransactionIdentifier {
+    fn from(transaction: SnarkosTransaction) -> Self {
+        TransactionIdentifier {
+            hash: transaction.id(),
         }
     }
 }

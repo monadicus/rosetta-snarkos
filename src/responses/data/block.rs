@@ -1,5 +1,4 @@
 use super::*;
-use crate::common::SnarkosTransaction;
 
 #[derive(Debug, Deserialize)]
 #[serde(crate = "mentat_server::serde")]
