@@ -17,25 +17,16 @@ struct Metadata {
 // TODO make this a proc macro
 impl From<Metadata> for IndexMap<String, Value> {
     fn from(metadata: Metadata) -> Self {
-        let mut map = IndexMap::new();
-        map.insert("network".to_string(), metadata.network.into());
-        map.insert("round".to_string(), metadata.round.into());
-        map.insert("height".to_string(), metadata.height.into());
-        map.insert(
-            "coinbase_target".to_string(),
-            metadata.coinbase_target.into(),
-        );
-        map.insert("proof_target".to_string(), metadata.proof_target.into());
-        map.insert(
-            "last_coinbase_target".to_string(),
-            metadata.last_coinbase_target.into(),
-        );
-        map.insert(
-            "last_coinbase_timestamp".to_string(),
-            metadata.last_coinbase_timestamp.into(),
-        );
-        map.insert("timestamp".to_string(), metadata.timestamp.into());
-        map
+        indexmap! {
+            "network".into() => metadata.network.into(),
+            "round".into() => metadata.round.into(),
+            "height".into() => metadata.height.into(),
+            "coinbase_target".into() => metadata.coinbase_target.into(),
+            "proof_target".into() => metadata.proof_target.into(),
+            "last_coinbase_target".into() =>metadata.last_coinbase_target.into(),
+            "last_coinbase_timestamp".into() => metadata.last_coinbase_timestamp.into(),
+            "timestamp".into() => metadata.timestamp.into(),
+        }
     }
 }
 
@@ -55,6 +46,7 @@ pub struct BlockResult {
     previous_hash: String,
     header: Header,
     transactions: Vec<SnarkosTransaction>,
+    // coinbase: <partial_solutions: [<address, nonce, commitment>], proof.w: <x, y, infinity>>
     // signature: String,
 }
 

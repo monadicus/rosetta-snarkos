@@ -8,6 +8,10 @@ mod error;
 pub use error::*;
 
 mod response;
-use mentat_server::{indexmap::IndexMap, serde::Deserialize, serde_json::Value};
+use mentat_server::{
+    indexmap::{indexmap, IndexMap},
+    serde::{Deserialize, Serialize},
+    serde_json::Value,
+};
 use mentat_types::*;
 pub use response::*;

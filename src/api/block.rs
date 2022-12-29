@@ -27,7 +27,7 @@ impl BlockApi for SnarkosBlockApi {
         tracing::debug!(id);
 
         let block = node_caller
-            .rest_call::<BlockResult>(Request::get_block(id))
+            .rest_call::<BlockResult>(Request::get_block_by_height(id))
             .await?;
         Ok(block.into())
     }

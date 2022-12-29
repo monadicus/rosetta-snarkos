@@ -3,66 +3,127 @@ use std::fmt::Debug;
 use mentat_server::{
     conf::Configuration,
     reqwest,
-    serde::{de::DeserializeOwned, Serialize},
+    serde::de::DeserializeOwned,
     serde_json::{self, json, Value},
 };
 use mentat_types::{MapErrMentat, Result};
 
-use crate::node::Config;
+use crate::{common::SnarkosTransaction, node::Config};
 
 pub enum Request<'a> {
     Get(&'a str),
-    Post(&'a str),
+    Post(&'a str, Value),
 }
 
 impl<'a> Request<'a> {
+    /// Returns the peers connected to the node.
     pub const ALL_PEERS: Self = Self::Get("api/testnet3/peers/all");
-    pub const ALL_RECORDS: Self = Self::Get("api/testnet3/records/all");
+    /// Returns the metrics for peers connected to the node.
+    pub const ALL_PEERS_METRICS: Self = Self::Get("api/testnet3/peers/all/metrics");
+    /// Returns the list of current beacons.
+    pub const BEACONS: Self = Self::Get("api/testnet3/beacons");
+    /// Returns the number of peers connected to the node.
     pub const COUNT_PEERS: Self = Self::Get("api/testnet3/peers/count");
+    /// Returns the latest block.
     pub const LATEST_BLOCK: Self = Self::Get("api/testnet3/latest/block");
+    /// Returns the latest block hash.
     pub const LATEST_HASH: Self = Self::Get("api/testnet3/latest/hash");
+    /// Returns the latest block height.
     pub const LATEST_HEIGHT: Self = Self::Get("api/testnet3/latest/height");
+    /// Returns the latest state root.
+    pub const LATEST_STATE_ROOT: Self = Self::Get("api/testnet3/latest/stateRoot");
+    /// Returns the transactions in the memory pool.
+    pub const MEM_POOL_TRANSACTIONS: Self = Self::Get("api/testnet3/memoryPool/transactions");
     pub const NODE_ADDRESS: Self = Self::Get("api/testnet3/node/address");
-    pub const SPENT_RECORDS: Self = Self::Get("api/testnet3/records/spent");
-    pub const TRANSACTIONS_BROADCAST: Self = Self::Get("api/testnet3/transactions/broadcast");
-    pub const TRANSACTIONS_MEMPOOL: Self = Self::Get("api/testnet3/transactions/mempool");
-    pub const UNSPENT_RECORDS: Self = Self::Get("api/testnet3/records/unspent");
-    pub const VALIDATORS: Self = Self::Get("api/testnet3/validators");
 
-    pub fn get_block(height: usize) -> Self {
+    /// Returns the block for the given block height.
+    pub fn get_block_by_height(height: usize) -> Self {
         let ep = format!("api/testnet3/block/{height}");
         let leaked = Box::leak(ep.into_boxed_str());
         Self::Get(leaked)
     }
 
+    /// Returns the block for the given block hash.
+    pub fn get_block_by_hash(hash: String) -> Self {
+        let ep = format!("api/testnet3/block/{hash}");
+        let leaked = Box::leak(ep.into_boxed_str());
+        Self::Get(leaked)
+    }
+
+    /// Returns the block height for the given block hash.
+    pub fn get_block_height_by_hash(hash: String) -> Self {
+        let ep = format!("api/testnet3/height/{hash}");
+        let leaked = Box::leak(ep.into_boxed_str());
+        Self::Get(leaked)
+    }
+
+    /// Returns the transactions for the given block height.
+    pub fn get_block_transactions(height: usize) -> Self {
+        let ep = format!("api/testnet3/block/{height}/transactions");
+        let leaked = Box::leak(ep.into_boxed_str());
+        Self::Get(leaked)
+    }
+
+    /// Returns the blocks for the given block range.
     pub fn get_blocks(start: usize, end: usize) -> Self {
-        let ep = format!("api/testnet3/block?start={start}&end={end}");
+        let ep = format!("api/testnet3/blocks?start={start}&end={end}");
         let leaked = Box::leak(ep.into_boxed_str());
         Self::Get(leaked)
     }
 
-    pub fn get_transactions(height: usize) -> Self {
-        let ep = format!("api/testnet3/transactions/{height}");
-        let leaked = Box::leak(ep.into_boxed_str());
-        Self::Get(leaked)
-    }
-
+    /// Returns the transaction for the given transaction ID.
     pub fn get_transaction(id: String) -> Self {
         let ep = format!("api/testnet3/transaction/{id}");
         let leaked = Box::leak(ep.into_boxed_str());
         Self::Get(leaked)
     }
 
+    /// Returns the program for the given program ID.
     pub fn get_program(id: String) -> Self {
         let ep = format!("api/testnet3/program/{id}");
         let leaked = Box::leak(ep.into_boxed_str());
         Self::Get(leaked)
     }
 
+    /// Returns the state path for the given commitment.
     pub fn get_state_path(commitment: String) -> Self {
         let ep = format!("api/testnet3/statePath/{commitment}");
         let leaked = Box::leak(ep.into_boxed_str());
         Self::Get(leaked)
+    }
+
+    /// Returns the block hash that contains the given `transaction ID`.
+    pub fn find_block_hash(transaction_id: String) -> Self {
+        let ep = format!("api/testnet3/find/blockHash/{transaction_id}");
+        let leaked = Box::leak(ep.into_boxed_str());
+        Self::Get(leaked)
+    }
+
+    /// Returns the transaction ID that contains the given `program ID`.
+    pub fn find_deployment_id(program: String) -> Self {
+        let ep = format!("api/testnet3/find/deploymentID/{program}");
+        let leaked = Box::leak(ep.into_boxed_str());
+        Self::Get(leaked)
+    }
+
+    /// Returns the transaction ID that contains the given `transition ID`.
+    pub fn find_transaction_id(transition_id: String) -> Self {
+        let ep = format!("api/testnet3/find/transactionID/{transition_id}");
+        let leaked = Box::leak(ep.into_boxed_str());
+        Self::Get(leaked)
+    }
+
+    /// Returns the transition ID that contains the given `input ID` or `output
+    /// ID`.
+    pub fn find_transition_id(id: String) -> Self {
+        let ep = format!("api/testnet3/find/transitionID/{id}");
+        let leaked = Box::leak(ep.into_boxed_str());
+        Self::Get(leaked)
+    }
+
+    /// Broadcasts the transaction to the ledger.
+    pub fn transaction_broadcast(transaction: SnarkosTransaction) -> Self {
+        Self::Post("api/testnet3/transaction/broadcast", json!(transaction))
     }
 }
 
@@ -95,9 +156,10 @@ impl SnarkosCaller {
                     .send()
                     .await?
             }
-            Request::Post(url) => {
+            Request::Post(url, body) => {
                 self.client
                     .post(&format!("{}{url}", self.node_rpc_url))
+                    .json(&body)
                     .send()
                     .await?
             }

@@ -1,6 +1,6 @@
 use super::*;
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(crate = "mentat_server::serde")]
 #[serde(tag = "type")]
 pub enum SnarkosTransaction {
@@ -31,17 +31,17 @@ impl SnarkosTransaction {
     }
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(crate = "mentat_server::serde")]
 pub struct DeployTx {
-    // #[serde(rename = "type")]
-    // type_: String,
+    #[serde(rename = "type")]
+    type_: String,
     id: String,
-    // deployment: Deployment,
+    deployment: Deployment,
     // additional_fee: (),
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(crate = "mentat_server::serde")]
 pub struct Deployment {
     // edition: u16,
@@ -49,21 +49,21 @@ pub struct Deployment {
     // pub verifying_keys: (),
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(crate = "mentat_server::serde")]
 pub struct ExecTx {
-    // #[serde(rename = "type")]
-    // type_: String,
+    #[serde(rename = "type")]
+    type_: String,
     id: String,
     execution: Execution,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(crate = "mentat_server::serde")]
 pub struct Execution {
     transitions: Vec<SnarkosTransition>,
-    // global_state_root: String,
-    // inclusion: String,
+    global_state_root: String,
+    inclusion: String,
 }
 
 impl From<SnarkosTransaction> for Transaction {
