@@ -35,6 +35,7 @@ impl NodeConf for Config {
 }
 
 impl Config {
+    // TODO hard coded to the Aleo CDN for now while node is buggy.
     pub fn build_url(conf: &Configuration<Self>) -> Url {
         let url = format!(
             "{}://{}:{}",

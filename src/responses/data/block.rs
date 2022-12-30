@@ -49,6 +49,21 @@ pub struct BlockResult {
     // signature: String,
 }
 
+impl BlockResult {
+    pub fn timestamp(&self) -> usize {
+        self.header.metadata.timestamp
+    }
+}
+
+impl From<BlockResult> for BlockIdentifier {
+    fn from(result: BlockResult) -> Self {
+        BlockIdentifier {
+            index: result.header.metadata.height,
+            hash: result.block_hash,
+        }
+    }
+}
+
 impl From<BlockResult> for BlockResponse {
     fn from(result: BlockResult) -> Self {
         BlockResponse {

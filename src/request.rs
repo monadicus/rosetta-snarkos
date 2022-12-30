@@ -6,7 +6,7 @@ use mentat_server::{
     serde::de::DeserializeOwned,
     serde_json::{self, json, Value},
 };
-use mentat_types::{MapErrMentat, Result};
+use mentat_types::{MapErrMentat, MentatError, Result};
 
 use crate::{node::Config, SnarkosTransaction};
 
@@ -124,6 +124,50 @@ impl<'a> Request<'a> {
     /// Broadcasts the transaction to the ledger.
     pub fn transaction_broadcast(transaction: SnarkosTransaction) -> Self {
         Self::Post("api/testnet3/transaction/broadcast", json!(transaction))
+    }
+}
+
+impl<'a> TryFrom<mentat_types::CallRequest> for Request<'a> {
+    type Error = MentatError;
+
+    fn try_from(req: mentat_types::CallRequest) -> Result<Self, Self::Error> {
+        let mut endpoint = req
+            .parameters
+            .get("endpoint")
+            .ok_or_else(|| MentatError::from("no endpoint in `parameters` provided"))?
+            .to_string();
+        // TODO why is serde putting extra quotes in?
+        endpoint = endpoint.replace('\"', "");
+        let params = req
+            .parameters
+            .get("params")
+            .ok_or_else(|| MentatError::from("no params in `parameters` provided"))?;
+        let params_map = params
+            .as_object()
+            .ok_or_else(|| MentatError::from("params in `parameters` was not an object"))?;
+
+        for (key, value) in params_map.iter() {
+            endpoint = endpoint.replace(&format!("{{{key}}}"), &value.to_string());
+        }
+        let leaked = Box::leak(endpoint.into_boxed_str());
+
+        Ok(match req.method.to_ascii_lowercase().as_str() {
+            "post" => {
+                let body = req.parameters.get("body").ok_or_else(|| {
+                    MentatError::from(
+                        "no body in `parameters` provided when post method was selected",
+                    )
+                })?;
+                // TODO do we have to clone body here?
+                Request::Post(leaked, body.clone())
+            }
+            "get" => Request::Get(leaked),
+            _ => {
+                return Err(MentatError::from(
+                    "no endpoint params in `parameters` provided",
+                ));
+            }
+        })
     }
 }
 

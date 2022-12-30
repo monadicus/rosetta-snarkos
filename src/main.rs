@@ -30,6 +30,7 @@ impl ServerType for MentatSnarkos {
 
     fn init_asserters(config: &Configuration<Self::CustomConfig>) -> AsserterTable {
         Asserter::new_server(
+            // TODO required to have values, but need to figure out.
             vec!["INPUT".into(), "OUTPUT".into(), "COINBASE".into()],
             true,
             vec![
@@ -39,7 +40,7 @@ impl ServerType for MentatSnarkos {
                 )
                     .into(),
             ],
-            Vec::new(),
+            vec!["get".into(), "post".into()],
             false,
             None,
         )
