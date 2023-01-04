@@ -7,12 +7,13 @@ mod responses;
 use mentat_asserter::Asserter;
 use mentat_server::{
     conf::{AsserterTable, Configuration, NodeConf},
-    mentat,
-    server::ServerType,
+    server::{Server, ServerBuilder, ServerType},
 };
 pub use responses::*;
 
-#[mentat]
+// This way also works
+// TODO but need a way to enable optional api from macro
+// #[mentat_server::mentat]
 struct MentatSnarkos;
 
 impl ServerType for MentatSnarkos {
@@ -47,4 +48,21 @@ impl ServerType for MentatSnarkos {
         .unwrap()
         .into()
     }
+}
+
+#[mentat_server::main]
+async fn main() -> Server<MentatSnarkos> {
+    println!("hello rosetta!");
+    ServerBuilder::default()
+        .account_api(SnarkosAccountApi)
+        .block_api(SnarkosBlockApi)
+        .call_api(SnarkosCallApi)
+        .construction_api(SnarkosConstructionApi)
+        .custom_configuration_from_arg()
+        .events_api(SnarkosEventsApi)
+        .mempool_api(SnarkosMempoolApi)
+        .network_api(SnarkosNetworkApi)
+        .optional_api(SnarkosOptionalApi, true)
+        .search_api(SnarkosSearchApi)
+        .build()
 }

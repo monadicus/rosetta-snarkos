@@ -1,10 +1,9 @@
+use mentat_server::indexmap::indexmap;
+
 use super::*;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct SnarkosNetworkApi;
-
-#[async_trait]
-impl NetworkApiRouter for SnarkosNetworkApi {}
 
 #[async_trait]
 impl NetworkApi for SnarkosNetworkApi {
@@ -79,15 +78,15 @@ impl NetworkApi for SnarkosNetworkApi {
             genesis_block_identifier: genesis_block.into(),
             oldest_block_identifier: None,
             sync_status: None,
-            // TODO make a from<String> method for Peer in mentat.
-            // TODO use ALL_PEERS_METRICS once it works
             peers: node_caller
-                .rest_call::<Vec<String>>(Request::ALL_PEERS)
+                .rest_call::<Vec<(String, String)>>(Request::ALL_PEERS_METRICS)
                 .await?
                 .into_iter()
-                .map(|peer_id| Peer {
+                .map(|(peer_id, node_type)| Peer {
                     peer_id,
-                    metadata: Default::default(),
+                    metadata: indexmap! {
+                        "node_type".into() => mentat_server::serde_json::json!(node_type),
+                    },
                 })
                 .collect(),
         })

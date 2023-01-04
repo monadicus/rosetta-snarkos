@@ -23,13 +23,7 @@ mod optional;
 pub use optional::*;
 
 mod search;
-use mentat_server::{
-    api::*,
-    axum::{async_trait, Json},
-    conf::{Mode, NodePid},
-    sysinfo::Pid,
-    tracing,
-};
+use mentat_server::{api::*, axum::async_trait, conf::Mode, tracing};
 use mentat_types::*;
 pub use search::*;
 

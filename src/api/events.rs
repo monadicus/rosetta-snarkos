@@ -1,10 +1,7 @@
 use super::*;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct SnarkosEventsApi;
-
-#[async_trait]
-impl EventsApiRouter for SnarkosEventsApi {}
 
 #[async_trait]
 impl EventsApi for SnarkosEventsApi {

@@ -1,11 +1,11 @@
 use super::*;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct SnarkosConstructionApi;
 
-#[async_trait]
-impl ConstructionApiRouter for SnarkosConstructionApi {}
-
+// TODO
+// Not possible till mentat is finished &
+// Snarkos has a way for users to get addresses
 #[async_trait]
 impl ConstructionApi for SnarkosConstructionApi {
     type NodeCaller = SnarkosCaller;

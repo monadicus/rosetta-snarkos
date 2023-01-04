@@ -1,10 +1,7 @@
 use super::*;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct SnarkosCallApi;
-
-#[async_trait]
-impl CallApiRouter for SnarkosCallApi {}
 
 #[async_trait]
 impl CallApi for SnarkosCallApi {

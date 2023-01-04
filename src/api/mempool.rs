@@ -1,10 +1,7 @@
 use super::*;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct SnarkosMempoolApi;
-
-#[async_trait]
-impl MempoolApiRouter for SnarkosMempoolApi {}
 
 #[async_trait]
 impl MempoolApi for SnarkosMempoolApi {

@@ -34,6 +34,7 @@ impl<'a> Request<'a> {
     pub const LATEST_STATE_ROOT: Self = Self::Get("api/testnet3/latest/stateRoot");
     /// Returns the transactions in the memory pool.
     pub const MEM_POOL_TRANSACTIONS: Self = Self::Get("api/testnet3/memoryPool/transactions");
+    /// Returns this node's address.
     pub const NODE_ADDRESS: Self = Self::Get("api/testnet3/node/address");
 
     /// Returns the block for the given block height.
