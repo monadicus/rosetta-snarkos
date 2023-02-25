@@ -5,5 +5,5 @@ network = "TESTNET"
 secure_http = false
 node_address = "127.0.0.1"
 node_path = "../snarkos/target/release/snarkos"
-node_rpc_port = 3032
+node_rpc_port = 3033
 port = 8080

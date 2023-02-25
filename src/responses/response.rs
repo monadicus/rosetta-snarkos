@@ -1,17 +1,15 @@
 use std::fmt::Debug;
 
-use mentat::{
-    errors::Result,
+use mentat_server::{
     serde::{de::DeserializeOwned, Deserialize},
-    server::RpcResponse,
     tracing,
 };
+use mentat_types::Result;
 
-use super::ErrorResponse;
-use crate::request::SnarkosJrpc;
+use crate::ErrorResponse;
 
 #[derive(Clone, Debug, Deserialize)]
-#[serde(crate = "mentat::serde")]
+#[serde(crate = "mentat_server::serde")]
 pub struct InnerResponse<I> {
     // jsonrpc: String,
     pub result: I,
@@ -19,26 +17,21 @@ pub struct InnerResponse<I> {
 }
 
 #[derive(Clone, Debug, Deserialize)]
-#[serde(crate = "mentat::serde")]
+#[serde(crate = "mentat_server::serde")]
 #[serde(untagged)]
 pub enum Response<O> {
     Ok(InnerResponse<O>),
     Err(ErrorResponse),
 }
 
-impl<O> RpcResponse for Response<O>
+impl<O> Response<O>
 where
     O: Debug + DeserializeOwned,
 {
-    type I = SnarkosJrpc;
-    type O = O;
-
-    fn unwrap_response(self) -> Result<Self::O> {
+    pub fn unwrap_response(self) -> Result<O> {
+        tracing::debug!("res: {self:#?}");
         match self {
-            Response::Ok(res) => {
-                tracing::debug!("res: {res:#?}");
-                Ok(res.result)
-            }
+            Response::Ok(res) => Ok(res.result),
             Response::Err(err) => err.into(),
         }
     }
