@@ -26,7 +26,7 @@ impl AccountApi for SnarkosAccountApi {
 
     // TODO not possible no way to get addresses of other nodes.
     // Therefore no way to get unspent coins of an address.
-    // Also not sure if we need at all. 
+    // Also not sure if we need at all.
     async fn account_coins(
         &self,
         _caller: Caller,
